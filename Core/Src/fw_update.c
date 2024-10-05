@@ -25,8 +25,8 @@ inline static void get_data(struct w25q *mem, uint32_t address, uint16_t size,
 	w25q_read_data(mem, address, buffer, size);
 }
 
-static void set_data(struct w25q *mem, uint32_t address, uint16_t size,
-		uint8_t *buffer)
+static void set_data(struct w25q *mem, uint32_t address, uint8_t *buffer,
+		uint16_t size)
 {
 	uint16_t ws;
 
@@ -60,7 +60,7 @@ inline static void get_header(struct w25q *mem, struct fws *header)
 inline static void set_header(struct w25q *mem, struct fws *header)
 {
 	erase_header(mem, header);
-	set_data(mem, FWS_HEADER_ADDR, sizeof(struct fws), (uint8_t *) header);
+	set_data(mem, FWS_HEADER_ADDR, (uint8_t *) header, sizeof(struct fws));
 }
 
 inline static void get_payload(struct w25q *mem, uint32_t address,
