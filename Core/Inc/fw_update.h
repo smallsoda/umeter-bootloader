@@ -17,6 +17,6 @@
  * @param mem: struct w25q handle
  * @retval: 0 on success, -1 on failure
  */
-int fw_update(struct w25q *mem);
+int fw_update(struct w25q *mem, volatile struct bl_params *bl);
 
 #endif /* FW_UPDATE_H_ */

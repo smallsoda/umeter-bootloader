@@ -16,8 +16,6 @@ extern const uint32_t *_app;
 #define APP_LENGTH ((uint32_t) &_app_len)
 #define APP_ADDRESS ((uint32_t) &_app)
 
-volatile struct bl_params bl __attribute__((section(".noinit")));
-
 
 inline static void get_data(struct w25q *mem, uint32_t address, uint16_t size,
 		uint8_t *buffer)
@@ -165,14 +163,13 @@ static enum fws_status update(struct w25q *mem)
 	return FWS_STATUS_SUCCESS;
 }
 
-int fw_update(struct w25q *mem)
+int fw_update(struct w25q *mem, volatile struct bl_params *bl)
 {
 	enum fws_status status;
 
 	status = update(mem);
 
-	bl.status = status;
-	strcpy((char *) bl.datetime, __TIMESTAMP__);
+	bl->status = status;
 
 	if ((status == FWS_STATUS_NO_FW) || (status == FWS_STATUS_SUCCESS))
 		return 0;

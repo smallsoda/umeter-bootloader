@@ -22,8 +22,16 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
+#include <string.h>
+
 #include "fw_update.h"
 #include "w25q.h"
+
+#if __has_include("gitcommit.h")
+#include "gitcommit.h"
+#else
+#define GIT_COMMIT_HASH "-"
+#endif
 
 /* USER CODE END Includes */
 
@@ -46,6 +54,8 @@
 SPI_HandleTypeDef hspi2;
 
 /* USER CODE BEGIN PV */
+
+volatile struct bl_params bl __attribute__((section(".noinit")));
 
 extern const uint32_t _app;
 #define APP_ADDRESS ((uint32_t) &_app)
@@ -100,7 +110,11 @@ int main(void)
   // Firmware update
   struct w25q mem;
   w25q_init(&mem, &hspi2, SPI2_CS_GPIO_Port, SPI2_CS_Pin);
-  fw_update(&mem);
+  fw_update(&mem, &bl);
+
+  // Parameters
+  strcpy((char *) bl.datetime, __TIMESTAMP__);
+  strcpy((char *) bl.hash, GIT_COMMIT_HASH);
 
   // Deinitialization
   HAL_SPI_DeInit(&hspi2);
