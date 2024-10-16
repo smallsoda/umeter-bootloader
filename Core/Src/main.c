@@ -113,7 +113,6 @@ int main(void)
   fw_update(&mem, &bl);
 
   // Parameters
-  strcpy((char *) bl.datetime, __TIMESTAMP__);
   strcpy((char *) bl.hash, GIT_COMMIT_HASH);
 
   // Deinitialization
