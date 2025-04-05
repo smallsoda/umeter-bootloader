@@ -35,7 +35,6 @@ static void set_data(struct w25q *mem, uint32_t address, uint8_t *buffer,
 		else
 			ws = size;
 
-		w25q_write_enable(mem);
 		w25q_write_data(mem, address, buffer, ws);
 
 		size -= ws;
@@ -46,7 +45,6 @@ static void set_data(struct w25q *mem, uint32_t address, uint8_t *buffer,
 
 inline static void erase_header(struct w25q *mem, struct fws *header)
 {
-	w25q_write_enable(mem);
 	w25q_sector_erase(mem, FWS_HEADER_ADDR);
 }
 
