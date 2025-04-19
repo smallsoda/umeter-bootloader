@@ -73,6 +73,16 @@ static void MX_SPI2_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+void systimer(void)
+{
+	static uint16_t cnt = 0;
+
+	cnt = (cnt + 1) & 0x3FF; // ~ 1 second
+
+	if (!cnt)
+		HAL_GPIO_TogglePin(EXT_WDG_GPIO_Port, EXT_WDG_Pin);
+}
+
 /* USER CODE END 0 */
 
 /**
@@ -240,12 +250,15 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(SPI2_CS_GPIO_Port, SPI2_CS_Pin, GPIO_PIN_SET);
 
-  /*Configure GPIO pin : SPI2_CS_Pin */
-  GPIO_InitStruct.Pin = SPI2_CS_Pin;
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(EXT_WDG_GPIO_Port, EXT_WDG_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pins : SPI2_CS_Pin EXT_WDG_Pin */
+  GPIO_InitStruct.Pin = SPI2_CS_Pin|EXT_WDG_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(SPI2_CS_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */
