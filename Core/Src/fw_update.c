@@ -16,6 +16,14 @@ extern const uint32_t *_app;
 #define APP_LENGTH ((uint32_t) &_app_len)
 #define APP_ADDRESS ((uint32_t) &_app)
 
+/*
+ * FLASH_SECTOR_0 - 16K - bootloader
+ * FLASH_SECTOR_1 - 16K - storage
+ * FLASH_SECTOR_2 ... FLASH_SECTOR_7 - 480K - application
+ */
+#define APP_START_SECTOR FLASH_SECTOR_2
+#define APP_NB_SECTORS (FLASH_SECTOR_TOTAL - 2)
+
 
 inline static void get_data(struct w25q *mem, uint32_t address, uint16_t size,
 		uint8_t *buffer)
@@ -115,10 +123,11 @@ static enum fws_status update(struct w25q *mem)
 	// Clear MCU FLASH
 	uint32_t page_error;
 	FLASH_EraseInitTypeDef erase_init;
-	erase_init.TypeErase = FLASH_TYPEERASE_PAGES;
+	erase_init.TypeErase = FLASH_TYPEERASE_SECTORS;
 	erase_init.Banks = FLASH_BANK_1;
-	erase_init.PageAddress = APP_ADDRESS;
-	erase_init.NbPages = APP_LENGTH / FLASH_PAGE_SIZE;
+	erase_init.Sector = APP_START_SECTOR;
+	erase_init.NbSectors = APP_NB_SECTORS;
+	erase_init.VoltageRange = FLASH_VOLTAGE_RANGE_3;
 
 	HAL_FLASH_Unlock();
 	if (HAL_FLASHEx_Erase(&erase_init, &page_error) != HAL_OK)
@@ -138,6 +147,7 @@ static enum fws_status update(struct w25q *mem)
 
 		get_payload(mem, address, buffer, ws);
 
+		/* todo: fix me */
 		for (uint32_t i = 0; i < ws; i += sizeof(uint64_t))
 			HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, APP_ADDRESS +
 					address + i, *((uint64_t *) &buffer[i]));
