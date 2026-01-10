@@ -147,10 +147,9 @@ static enum fws_status update(struct w25q *mem)
 
 		get_payload(mem, address, buffer, ws);
 
-		/* todo: fix me */
-		for (uint32_t i = 0; i < ws; i += sizeof(uint64_t))
-			HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, APP_ADDRESS +
-					address + i, *((uint64_t *) &buffer[i]));
+		for (uint32_t i = 0; i < ws; i += sizeof(uint32_t))
+			HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, APP_ADDRESS + address + i,
+					*((uint32_t *) &buffer[i]));
 		address += ws;
 	}
 	HAL_FLASH_Lock();
